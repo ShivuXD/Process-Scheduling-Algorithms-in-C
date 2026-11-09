@@ -2,7 +2,6 @@
 
 struct Process {
     int pid, at, bt, ct, tat, wt;
-
 };
 
 int main() {
