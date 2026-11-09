@@ -1,12 +1,12 @@
 #include <stdio.h>
 
 struct Process {
-    int pid, at, bt, ct, tat, wt, done;
+    int pid, at, bt, rt, ct, tat, wt;
 };
 
 int main() {
-    int n, time = 0, completed = 0;
-    float avgWT = 0, avgTAT = 0;
+    int n, time = 0, completed = 0, prev = -2;
+    float avgwt = 0, avgtat = 0;
 
     printf("Enter number of processes: ");
     scanf("%d", &n);
@@ -15,62 +15,65 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         p[i].pid = i + 1;
-        p[i].done = 0;
 
-        printf("Enter AT and BT for P%d: ", i + 1);
+        printf("Enter Arrival Time and Burst Time for P%d: ", i + 1);
         scanf("%d %d", &p[i].at, &p[i].bt);
+
+        p[i].rt = p[i].bt;
     }
 
-    printf("\nGantt Chart:\n0");
+    printf("\nGantt Chart: \n");
 
     while (completed < n) {
         int idx = -1;
 
-      for (int i = 0; i < n; i++) {
-            if (p[i].done == 0 && p[i].at <= time) {
-                if (idx == -1 || p[i].bt < p[idx].bt) {
+        for (int i = 0; i < n; i++) {
+            if (p[i].at <= time && p[i].rt > 0) {
+                if (idx == -1 ||
+                    p[i].rt < p[idx].rt ||
+                    (p[i].rt == p[idx].rt &&
+                     p[i].at < p[idx].at)) {
                     idx = i;
                 }
             }
         }
-
-      if (idx == -1) {
-            int next = -1;
-
-            for (int i = 0; i < n; i++) {
-                if (p[i].done == 0) {
-                    if (next == -1 || p[i].at < p[next].at) {
-                        next = i;
-                    }
-                }
+        if (idx != prev) {
+            if (prev >= 0){
+                printf(" P%d | ", p[prev].pid);
             }
+            prev = idx;
+        }
 
-            printf(" --IDLE--> %d", p[next].at);
-            time = p[next].at;
+        if (idx == -1) {
+            time++;
             continue;
         }
 
-        time += p[idx].bt;
-        p[idx].ct = time;
+        p[idx].rt--;
+        time++;
 
-        printf("P%d |", p[idx].pid);
+        if (p[idx].rt == 0) {
+            p[idx].ct = time;
+            p[idx].tat = p[idx].ct - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
 
-        p[idx].tat = p[idx].ct - p[idx].at;
-        p[idx].wt = p[idx].tat - p[idx].bt;
-        avgWT += p[idx].wt;
-        avgTAT += p[idx].tat;
-        p[idx].done = 1;
-        completed++;
+            avgwt += p[idx].wt;
+            avgtat += p[idx].tat;
+            completed++;
+        }
+    }
+
+    if (prev >= 0){
+        printf(" P%d | ", p[prev].pid);
     }
 
     printf("\n\nPID\tAT\tBT\tCT\tTAT\tWT\n");
-
     for (int i = 0; i < n; i++) {
         printf("P%d\t%d\t%d\t%d\t%d\t%d\n", p[i].pid, p[i].at, p[i].bt, p[i].ct, p[i].tat, p[i].wt);
     }
 
-    printf("\nAverage WT: %.2f", avgWT / n);
-    printf("\nAverage TAT: %.2f\n", avgTAT / n);
+    printf("\nAverage WT: %.2f", avgwt / n);
+    printf("\nAverage TAT: %.2f\n", avgtat / n);
 
     return 0;
 }
