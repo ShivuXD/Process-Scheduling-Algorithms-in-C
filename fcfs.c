@@ -13,10 +13,8 @@ int main() {
 
     struct Process p[n], temp;
 
-    for (int i = 0; i < n; i++) {
-        p[i].pid = i + 1;
-        
-        printf("Enter Arrival Time and Burst Time of P%d: ", p[i].pid);
+    for (int i = 0; i < n; i++) {        
+        printf("Enter Arrival Time and Burst Time of P%d: ", i+1;
         scanf("%d %d", &p[i].at, &p[i].bt);
     }
 
