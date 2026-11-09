@@ -1,18 +1,13 @@
-
 #include <stdio.h>
 
 struct Process {
-    int pid;
-    int at; 
-    int bt;   
-    int ct;  
-    int tat;  
-    int wt;   
+    int pid, at, bt, ct, tat, wt;
+
 };
 
 int main() {
     int n;
-    float avgWT = 0, avgTAT = 0;
+    float avgwt = 0, avgtat = 0;
 
     printf("Enter number of process(es): ");
     scanf("%d", &n);
@@ -21,9 +16,8 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         p[i].pid = i + 1;
-
-        printf("Process P%d\n", p[i].pid);
-        printf("Enter Arrival Time and Burst Time: ");
+        
+        printf("Enter Arrival Time and Burst Time of P%d: ", p[i].pid);
         scanf("%d %d", &p[i].at, &p[i].bt);
     }
 
@@ -36,19 +30,19 @@ int main() {
             }
         }
     }
-    int currentTime = 0;
+    int time = 0;
     printf("Gantt Chart: \n");
     for (int i = 0; i < n; i++) {
-        if (currentTime < p[i].at) {
-            currentTime = p[i].at;
+        if (time < p[i].at) {
+            time = p[i].at;
         }
-        p[i].ct = currentTime + p[i].bt;
+        p[i].ct = time + p[i].bt;
         p[i].tat = p[i].ct - p[i].at;
         p[i].wt = p[i].tat - p[i].bt;
 
-        currentTime = p[i].ct;
-        avgWT += p[i].wt;
-        avgTAT += p[i].tat;
+        time = p[i].ct;
+        avgwt += p[i].wt;
+        avgtat += p[i].tat;
         printf("P%d |\t", i+1);
     }
     printf("\n");
@@ -57,7 +51,7 @@ int main() {
         printf("P%d\t%d\t%d\t%d\t%d\t%d\n", p[i].pid, p[i].at, p[i].bt, p[i].ct, p[i].tat, p[i].wt);
     }
 
-    printf("Average Waiting Time: %.2f\n", avgWT / n);
-    printf("Average Turnaround Time: %.2f", avgTAT / n);
+    printf("Average Waiting Time: %.2f\n", avgwt / n);
+    printf("Average Turnaround Time: %.2f", avgtat / n);
     return 0;
 }
